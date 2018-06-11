@@ -2,21 +2,21 @@
  * Script for login.ejs
  */
 // Validation Regexes.
-const validUsername         = /^[a-zA-Z0-9_]{1,16}$/
-const basicEmail            = /^\S+@\S+\.\S+$/
+const validUsername = /^[a-zA-Z0-9_]{1,16}$/
+const basicEmail = /^\S+@\S+\.\S+$/
 //const validEmail          = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i
 
 // Login Elements
-const loginCancelContainer  = document.getElementById('loginCancelContainer')
-const loginCancelButton     = document.getElementById('loginCancelButton')
-const loginEmailError       = document.getElementById('loginEmailError')
-const loginUsername         = document.getElementById('loginUsername')
-const loginPasswordError    = document.getElementById('loginPasswordError')
-const loginPassword         = document.getElementById('loginPassword')
-const checkmarkContainer    = document.getElementById('checkmarkContainer')
-const loginRememberOption   = document.getElementById('loginRememberOption')
-const loginButton           = document.getElementById('loginButton')
-const loginForm             = document.getElementById('loginForm')
+const loginCancelContainer = document.getElementById('loginCancelContainer')
+const loginCancelButton = document.getElementById('loginCancelButton')
+const loginEmailError = document.getElementById('loginEmailError')
+const loginUsername = document.getElementById('loginUsername')
+const loginPasswordError = document.getElementById('loginPasswordError')
+const loginPassword = document.getElementById('loginPassword')
+const checkmarkContainer = document.getElementById('checkmarkContainer')
+const loginRememberOption = document.getElementById('loginRememberOption')
+const loginButton = document.getElementById('loginButton')
+const loginForm = document.getElementById('loginForm')
 
 // Control variables.
 let lu = false, lp = false
@@ -24,22 +24,22 @@ let lu = false, lp = false
 
 /**
  * Show a login error.
- * 
+ *
  * @param {HTMLElement} element The element on which to display the error.
  * @param {string} value The error text.
  */
-function showError(element, value){
+function showError(element, value) {
     element.innerHTML = value
     element.style.opacity = 1
 }
 
 /**
  * Shake a login error to add emphasis.
- * 
+ *
  * @param {HTMLElement} element The element to shake.
  */
-function shakeError(element){
-    if(element.style.opacity == 1){
+function shakeError(element) {
+    if (element.style.opacity == 1) {
         element.classList.remove('shake')
         void element.offsetWidth
         element.classList.add('shake')
@@ -48,19 +48,19 @@ function shakeError(element){
 
 /**
  * Validate that an email field is neither empty nor invalid.
- * 
+ *
  * @param {string} value The email value.
  */
-function validateEmail(value){
-    if(value){
-        if(!basicEmail.test(value) && !validUsername.test(value)){
-            showError(loginEmailError, '* Invalid Value')
-            loginDisabled(true)
+function validateEmail(value) {
+    if (value) {
+        if (!basicEmail.test(value) && !validUsername.test(value)) {
+            showError(loginEmailError, '* Invalid Value');
+            loginDisabled(true);
             lu = false
         } else {
             loginEmailError.style.opacity = 0
             lu = true
-            if(lp){
+            if (lp) {
                 loginDisabled(false)
             }
         }
@@ -73,14 +73,14 @@ function validateEmail(value){
 
 /**
  * Validate that the password field is not empty.
- * 
+ *
  * @param {string} value The password value.
  */
-function validatePassword(value){
-    if(value){
+function validatePassword(value) {
+    if (value) {
         loginPasswordError.style.opacity = 0
         lp = true
-        if(lu){
+        if (lu) {
             loginDisabled(false)
         }
     } else {
@@ -110,22 +110,22 @@ loginPassword.addEventListener('input', (e) => {
 
 /**
  * Enable or disable the login button.
- * 
+ *
  * @param {boolean} v True to enable, false to disable.
  */
-function loginDisabled(v){
-    if(loginButton.disabled !== v){
+function loginDisabled(v) {
+    if (loginButton.disabled !== v) {
         loginButton.disabled = v
     }
 }
 
 /**
  * Enable or disable loading elements.
- * 
+ *
  * @param {boolean} v True to enable, false to disable.
  */
-function loginLoading(v){
-    if(v){
+function loginLoading(v) {
+    if (v) {
         loginButton.setAttribute('loading', v)
         loginButton.innerHTML = loginButton.innerHTML.replace('LOGIN', 'LOGGING IN')
     } else {
@@ -136,15 +136,15 @@ function loginLoading(v){
 
 /**
  * Enable or disable login form.
- * 
+ *
  * @param {boolean} v True to enable, false to disable.
  */
-function formDisabled(v){
+function formDisabled(v) {
     loginDisabled(v)
     loginCancelButton.disabled = v
     loginUsername.disabled = v
     loginPassword.disabled = v
-    if(v){
+    if (v) {
         checkmarkContainer.setAttribute('disabled', v)
     } else {
         checkmarkContainer.removeAttribute('disabled')
@@ -155,28 +155,28 @@ function formDisabled(v){
 /**
  * Parses an error and returns a user-friendly title and description
  * for our error overlay.
- * 
+ *
  * @param {Error | {cause: string, error: string, errorMessage: string}} err A Node.js
  * error or Mojang error response.
  */
-function resolveError(err){
+function resolveError(err) {
     // Mojang Response => err.cause | err.error | err.errorMessage
     // Node error => err.code | err.message
-    if(err.cause != null && err.cause === 'UserMigratedException') {
+    if (err.cause != null && err.cause === 'UserMigratedException') {
         return {
             title: 'Error During Login:<br>Invalid Credentials',
             desc: 'You\'ve attempted to login with a migrated account. Try again using the account email as the username.'
         }
     } else {
-        if(err.error != null){
-            if(err.error === 'ForbiddenOperationException'){
-                if(err.errorMessage != null){
-                    if(err.errorMessage === 'Invalid credentials. Invalid username or password.'){
+        if (err.error != null) {
+            if (err.error === 'ForbiddenOperationException') {
+                if (err.errorMessage != null) {
+                    if (err.errorMessage === 'Invalid credentials. Invalid username or password.') {
                         return {
                             title: 'Error During Login:<br>Invalid Credentials',
                             desc: 'The email or password you\'ve entered is incorrect. Please try again.'
                         }
-                    } else if(err.errorMessage === 'Invalid credentials.'){
+                    } else if (err.errorMessage === 'Invalid credentials.') {
                         return {
                             title: 'Error During Login:<br>Too Many Attempts',
                             desc: 'There have been too many login attempts with this account recently. Please try again later.'
@@ -186,14 +186,14 @@ function resolveError(err){
             }
         } else {
             // Request errors (from Node).
-            if(err.code != null){
-                if(err.code === 'ENOENT'){
+            if (err.code != null) {
+                if (err.code === 'ENOENT') {
                     // No Internet.
                     return {
                         title: 'Error During Login:<br>No Internet Connection',
                         desc: 'You must be connected to the internet in order to login. Please connect and try again.'
                     }
-                } else if(err.code === 'ENOTFOUND'){
+                } else if (err.code === 'ENOTFOUND') {
                     // Could not reach server.
                     return {
                         title: 'Error During Login:<br>Authentication Server Offline',
@@ -203,7 +203,7 @@ function resolveError(err){
             }
         }
     }
-    if(err.message != null){
+    if (err.message != null) {
         // Unknown error with request.
         return {
             title: 'Error During Login:<br>Unknown Error',
@@ -221,8 +221,8 @@ function resolveError(err){
 let loginViewOnSuccess = VIEWS.landing
 let loginViewOnCancel = VIEWS.settings
 
-function loginCancelEnabled(val){
-    if(val){
+function loginCancelEnabled(val) {
+    if (val) {
         $(loginCancelContainer).show()
     } else {
         $(loginCancelContainer).hide()
@@ -236,7 +236,9 @@ loginCancelButton.onclick = (e) => {
 }
 
 // Disable default form behavior.
-loginForm.onsubmit = () => { return false }
+loginForm.onsubmit = () => {
+    return false
+}
 
 // Bind login button behavior.
 loginButton.addEventListener('click', () => {
@@ -255,7 +257,7 @@ loginButton.addEventListener('click', () => {
         setTimeout(() => {
             switchView(VIEWS.login, loginViewOnSuccess, 500, 500, () => {
                 // Temporary workaround
-                if(loginViewOnSuccess === VIEWS.settings){
+                if (loginViewOnSuccess === VIEWS.settings) {
                     prepareSettings()
                 }
                 loginViewOnSuccess = VIEWS.landing // Reset this for good measure.

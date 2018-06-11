@@ -754,7 +754,8 @@ function slide_(up){
                 newsBtn.style.transition = 'none'
             }
             newsGlideCount--
-        }, 2000)
+        }, 2000);
+
     } else {
         setTimeout(() => {
             newsGlideCount--
@@ -786,6 +787,7 @@ document.getElementById('newsButton').onclick = () => {
             ConfigManager.setNewsCacheDismissed(true)
             ConfigManager.save()
         }
+
     }
     slide_(!newsActive)
     newsActive = !newsActive
@@ -950,9 +952,23 @@ function initNews(){
             
                     displayArticle(newsArr[nxtArt], nxtArt+1)
                 }
+
+
+                document.addEventListener('keydown', (e) => {
+                    console.log(e);
+                    if (newsActive) {
+                        if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+                            switchHandler(e.key === 'ArrowRight')
+                        }
+                        if (e.key === 'ArrowUp') {
+                            document.getElementById('newsButton').click();
+                        }
+                    }
+                });
             
                 document.getElementById('newsNavigateRight').onclick = () => { switchHandler(true) }
                 document.getElementById('newsNavigateLeft').onclick = () => { switchHandler(false) }
+
 
                 $('#newsErrorContainer').fadeOut(250, () => {
                     displayArticle(newsArr[0], 1)
